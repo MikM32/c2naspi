@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "../include/lexer.h"
@@ -34,6 +35,8 @@ void init_lexer(Lexer* lexer, const char* code_filename)
 {
     lexer->current_char_pos=0;
     lexer->raw_code= c2mada_readfile(code_filename);
+    lexer->current_token.type=TOKEN_NONE;
+    lexer->previous_token.type=TOKEN_NONE;
 
     if(!lexer->raw_code)
     {
@@ -51,7 +54,82 @@ void free_lexer(Lexer* lexer)
     }
 }
 
+void lex_next(Lexer* lexer)
+{
+    lexer->current_char_pos++;
+    lexer->raw_code+=lexer->current_char_pos;
+}
+
+void lex_num(Lexer* lexer)
+{
+    Byte len=0;
+    Half token_pos=lexer->current_char_pos;
+    TokenType type=TOKEN_INTEGER;
+
+    while(isdigit(*lexer->raw_code))
+    {
+        len++;
+        lex_next(lexer);
+    }
+
+    if(*lexer->raw_code == '.')
+    {
+        type=TOKEN_REAL;
+        len++;
+        lex_next(lexer);
+        while(isdigit(*lexer->raw_code))
+        {
+            len++;
+            lex_next(lexer);
+        }
+    }
+
+    init_token(&lexer->current_token, type, token_pos, len);
+
+}
+
+void lex_identifier(Lexer* lexer)
+{
+    Byte len=0;
+    Half token_pos=lexer->current_char_pos;
+    TokenType type=TOKEN_ID;
+
+    while(isalnum(*lexer->raw_code))
+    {
+        len++;
+        lex_next(lexer);
+    }
+
+    init_token(&lexer->current_token, type, token_pos, len);
+}
+
 void lex(Lexer* lexer)
 {
-    switch(lexer->code
+    if(isdigit(*lexer->raw_code))
+    {
+        lex_num(lexer);
+    }
+    else if(isalpha(*lexer->raw_code))
+    {
+        lex_identifier(lexer);
+    }
+    else
+    {
+        switch(*lexer->raw_code)
+        {
+            case '+':{
+                init_token(&lexer->current_token, TOKEN_PLUS,lexer->current_char_pos, 1);
+                break;
+            }
+            case '-':
+            break;
+            case '*':
+            break;
+            case '/':
+            break;
+        }
+        lex_next(lexer);
+    }
+
+    lexer->previous_token= lexer->current_token;
 }

@@ -4,6 +4,7 @@
 
 typedef enum enum_token_type
 {
+    TOKEN_NONE,
     TOKEN_ID,
     TOKEN_OBRACE,
     TOKEN_CBRACE,
@@ -28,5 +29,7 @@ struct st_token
 };
 
 typedef struct st_token Token;
+
+void init_token(Token* token, TokenType type, Half begin_pos, Half len);
 
 #endif
