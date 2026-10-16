@@ -5,7 +5,9 @@ int main()
 {
     Lexer a;
     init_lexer(&a, "prueba.c");
-    printf("%c", *(a.raw_code+1));
+    lex(&a);
+    lex(&a);
+    lex(&a);
     free_lexer(&a);
     return 0;
 }

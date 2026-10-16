@@ -1,2 +1,3 @@
-int main() 
-{ return 0; }
+hola 
+123
+12.4

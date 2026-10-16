@@ -4,7 +4,7 @@
 
 typedef enum enum_token_type
 {
-    TOKEN_NONE,
+    TOKEN_NONE=0,
     TOKEN_ID,
     TOKEN_OBRACE,
     TOKEN_CBRACE,
@@ -18,6 +18,7 @@ typedef enum enum_token_type
     TOKEN_SLASH,
     TOKEN_AMPERSAND,
     TOKEN_VBAR,
+    TOKEN_END,
 
 } TokenType;
 

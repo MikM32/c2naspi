@@ -1,3 +1,5 @@
-build/lexer.o: src/lexer.c src/../include/lexer.h src/../include/common.h
+build/lexer.o: src/lexer.c src/../include/lexer.h src/../include/common.h \
+ src/../include/token.h
 src/../include/lexer.h:
 src/../include/common.h:
+src/../include/token.h:
