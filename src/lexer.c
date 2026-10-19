@@ -19,6 +19,7 @@ char* c2mada_readfile(const char* filename, Word* code_size)
 
     *code_size = size;
     
+    // este es el buffer del fuente, vive hasta el final del pipeline
     char* raw_code = malloc((size_t)size + 1);
     if(!raw_code){ fclose(codefile); return NULL;}
 
@@ -53,7 +54,9 @@ void init_lexer(Lexer* lexer, const char* code_filename)
 void free_lexer(Lexer* lexer)
 {
     lexer->current_char_pos=0;
-    free(lexer->raw_code); //AVISO: El if solo compara si la referencia al lexer no es nula pero no maneja si el raw_code fue liberado antes o es nulo 
+    // el AST tiene tokens que apuntan a raw_code, por eso el fuente se libera al final.
+    // si se llama dos veces hay doble free, por eso conviene dejar raw_code en NULL.
+    free(lexer->raw_code);
 }
 
 void lex_next(Lexer* lexer)
@@ -64,7 +67,7 @@ void lex_next(Lexer* lexer)
         lexer->current_code++;
     }
     else {
-        init_token(&lexer->current_token, TOKEN_END, lexer->current_char_pos, 0);
+        init_token(&lexer->current_token, TOKEN_END, lexer->current_code, 0);
     }
 }
 
@@ -73,6 +76,8 @@ void lex_num(Lexer* lexer)
     Byte len=0;
     Half token_pos=lexer->current_char_pos;
     TokenType type=TOKEN_INTEGER;
+
+    char* begin_word = lexer->current_code;
 
     while(isdigit(*lexer->current_code))
     {
@@ -92,7 +97,7 @@ void lex_num(Lexer* lexer)
         }
     }
 
-    init_token(&lexer->current_token, type, token_pos, len);
+    init_token(&lexer->current_token, type, begin_word, len);
 
 }
 
@@ -102,13 +107,15 @@ void lex_identifier(Lexer* lexer)
     Half token_pos=lexer->current_char_pos;
     TokenType type=TOKEN_ID;
 
+    char* begin_word = lexer->current_code;
+
     while(isalnum(*lexer->current_code))
     {
         len++;
         lex_next(lexer);
     }
 
-    init_token(&lexer->current_token, type, token_pos, len);
+    init_token(&lexer->current_token, type, begin_word, len);
 }
 
 void lex_skip_garbage(Lexer* lexer)
@@ -153,19 +160,19 @@ void lex(Lexer* lexer)
         switch(*lexer->current_code)
         {
             case '+':{
-                init_token(&lexer->current_token, TOKEN_PLUS,lexer->current_char_pos, 1);
+                init_token(&lexer->current_token, TOKEN_PLUS,lexer->current_code, 1);
                 break;
             }
             case '-':{
-                init_token(&lexer->current_token, TOKEN_MINUS,lexer->current_char_pos, 1);
+                init_token(&lexer->current_token, TOKEN_MINUS,lexer->current_code, 1);
                 break;
             }
             case '*':{
-                init_token(&lexer->current_token, TOKEN_ASTERISC,lexer->current_char_pos, 1);
+                init_token(&lexer->current_token, TOKEN_ASTERISC,lexer->current_code, 1);
                 break;
             }
             case '/':{
-                init_token(&lexer->current_token, TOKEN_SLASH,lexer->current_char_pos, 1);
+                init_token(&lexer->current_token, TOKEN_SLASH,lexer->current_code, 1);
                 break;
             }
         }
@@ -185,20 +192,20 @@ void debug_lex(Lexer* lexer)
     {
         case TOKEN_ID:{
 
-            printf("TOKEN_ID: %.*s\n", lexer->current_token.len, lexer->raw_code+lexer->current_token.begin_pos);
+            printf("TOKEN_ID: %.*s\n", lexer->current_token.len, lexer->current_token.begin_word);
 
             break;
         }
 
         case TOKEN_INTEGER:
         {
-            printf("TOKEN_INTEGER: %.*s\n", lexer->current_token.len, lexer->raw_code+lexer->current_token.begin_pos);
+            printf("TOKEN_INTEGER: %.*s\n", lexer->current_token.len, lexer->current_token.begin_word);
             break;
         }
         
         case TOKEN_REAL:
         {
-            printf("TOKEN_REAL: %.*s\n", lexer->current_token.len, lexer->raw_code+lexer->current_token.begin_pos);
+            printf("TOKEN_REAL: %.*s\n", lexer->current_token.len, lexer->current_token.begin_word);
             break;
         }
 

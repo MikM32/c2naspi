@@ -22,15 +22,16 @@ typedef enum enum_token_type
 
 } TokenType;
 
+// un token no es dueno del texto, solo apunta a raw_code del lexer
 struct st_token
 {
     TokenType type;
-    Half begin_pos;
+    char* begin_word;   // apunta dentro de raw_code, no reserva memoria nueva
     Half len;
 };
 
 typedef struct st_token Token;
 
-void init_token(Token* token, TokenType type, Half begin_pos, Half len);
+void init_token(Token* token, TokenType type, char* begin_word, Half len);
 
 #endif

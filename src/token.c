@@ -1,11 +1,11 @@
 #include "../include/token.h"
 
 
-void init_token(Token* token, TokenType type, Half begin_pos, Half len)
+void init_token(Token* token, TokenType type, char* begin_word, Half len)
 {
     if(token)
     {
-        token->begin_pos=begin_pos;
+        token->begin_word=begin_word;
         token->type = type;
         token->len =len;
     }
