@@ -6,8 +6,7 @@
 typedef enum enum_ast_type
 {
     AST_NONE=0,
-    AST_INTEGER,
-    AST_REAL,
+    AST_LITERAL,
     AST_IDENTIFIER,
 }AstType;
 
@@ -15,13 +14,23 @@ typedef enum enum_ast_type
 struct st_ast_node
 {
     AstType type;
-    Token token;   // no es dueno de la memoria, apunta a raw_code
 
-    struct st_ast_integer
+    union union_ast_node_val
     {
-        
-    }integer;
+        struct st_ast_literal
+        {
+            Token token;
+        }literal;
 
+        struct st_ast_bin_op
+        {
+            Token token;
+            struct st_ast_node *operator1, *operator2;
+
+        }bin_op;
+
+    }value;
+    
 };
 
 typedef struct st_ast_node AstNode;
