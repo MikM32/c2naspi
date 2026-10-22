@@ -6,28 +6,41 @@
 typedef enum enum_ast_type
 {
     AST_NONE=0,
-    AST_LITERAL,
-    AST_IDENTIFIER,
+    AST_INTEGER,
+    AST_REAL,
+    AST_VAR,
+    AST_CALL,
 }AstType;
 
 // el AST se libera antes que el lexer porque sus tokens apuntan a raw_code
 struct st_ast_node
 {
     AstType type;
+    Token token;
 
     union union_ast_node_val
     {
-        struct st_ast_literal
+        struct st_ast_integer
         {
-            Token token;
-        }literal;
+            Word value;
+        }integer;
 
-        struct st_ast_bin_op
+        struct st_ast_real
         {
-            Token token;
-            struct st_ast_node *operator1, *operator2;
+            double value;
+        }real;
 
-        }bin_op;
+        struct st_ast_binary_op //Operacion binaria
+        {
+            //el token del nodo tiene el operador
+            struct st_ast_node *operand1, *operand2; //Operandos
+
+        }binary_op;
+
+        struct st_ast_unary_op
+        {
+            struct st_ast_node *operand1;
+        }unary_op;
 
     }value;
     
@@ -35,6 +48,9 @@ struct st_ast_node
 
 typedef struct st_ast_node AstNode;
 
-AstNode* new_ast_node(AstNode* node, AstType type);
+Word convert_to_word(Token token);
+double convert_to_double(Token token);
+
+AstNode* new_ast_node_literal(AstType type, Token token);
 
 #endif
