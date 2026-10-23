@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "../include/lexer.h"
 
-#define DEBUG_LEX
+//#define DEBUG_LEX
 
 
 char* c2mada_readfile(const char* filename, Word* code_size)
@@ -143,6 +143,7 @@ void lex_skip_garbage(Lexer* lexer)
 
 void lex(Lexer* lexer)
 {
+    lexer->previous_token= lexer->current_token;
 
     lex_skip_garbage(lexer);
 
@@ -175,6 +176,16 @@ void lex(Lexer* lexer)
                 init_token(&lexer->current_token, TOKEN_SLASH,lexer->current_code, 1);
                 break;
             }
+            case '(':
+            {
+                init_token(&lexer->current_token, TOKEN_OPAREN,lexer->current_code, 1);
+                break;
+            }
+            case ')':
+            {
+                init_token(&lexer->current_token, TOKEN_CPAREN,lexer->current_code, 1);
+                break;
+            }
         }
         lex_next(lexer);
     }
@@ -183,7 +194,6 @@ void lex(Lexer* lexer)
     debug_lex(lexer);
     #endif
 
-    lexer->previous_token= lexer->current_token;
 }
 
 void debug_lex(Lexer* lexer)

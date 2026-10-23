@@ -10,6 +10,8 @@ typedef enum enum_ast_type
     AST_REAL,
     AST_VAR,
     AST_CALL,
+    AST_BINOP,
+    AST_UNOP,
 }AstType;
 
 // el AST se libera antes que el lexer porque sus tokens apuntan a raw_code
@@ -52,5 +54,9 @@ Word convert_to_word(Token token);
 double convert_to_double(Token token);
 
 AstNode* new_ast_node_literal(AstType type, Token token);
+AstNode* new_ast_node_binop(Token token, AstNode* operand1, AstNode* operand2);
+AstNode* new_ast_node_unop(Token token, AstNode* operand1);
+
+void print_ast(AstNode* node, Byte level);
 
 #endif

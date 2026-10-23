@@ -8,6 +8,8 @@ typedef enum enum_token_type
     TOKEN_ID,
     TOKEN_OBRACE,
     TOKEN_CBRACE,
+    TOKEN_OPAREN,
+    TOKEN_CPAREN,
     TOKEN_INTEGER,
     TOKEN_REAL,
     TOKEN_EQUAL,

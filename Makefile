@@ -17,7 +17,9 @@ BUILD_DIR := build
 # --- Flags de compilación ---
 # -I$(INC_DIR)  -> los headers se buscan en include/
 # -MMD -MP      -> generan archivos .d con dependencias de headers
-CFLAGS  := -std=c11 -Wall -Wextra -Wpedantic -O2 -g \
+# -std=gnu11 en vez de -std=c11: strndup es POSIX, no ISO C11.
+# El modo estricto (__STRICT_ANSI__) oculta su declaracion en string.h.
+CFLAGS  := -std=gnu11 -Wall -Wextra -Wpedantic -O2 -g \
            -I$(INC_DIR) -MMD -MP
 
 # Flags de enlazado (añade aquí -lm, -lpthread, etc. si los necesitas)

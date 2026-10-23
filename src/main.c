@@ -1,13 +1,13 @@
 #include <stdio.h>
-#include "../include/lexer.h"
+#include "../include/parser.h"
 
 int main()
 {
-    Lexer a;
-    init_lexer(&a, "prueba.c");
-    lex(&a);
-    lex(&a);
-    lex(&a);
-    free_lexer(&a);
+    Parser parser;
+    init_parser(&parser, "prueba.c");
+    lex(&parser.lexer);
+    parse_expression(&parser);
+
+    print_ast(parser.ast_root, 1);
     return 0;
 }
